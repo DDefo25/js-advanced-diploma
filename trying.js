@@ -1,4 +1,5 @@
 const randomId = require('random-id');
+import PositionedCharacter from './src/js/PositionedCharacter'
 
 class Character {
     constructor(level, type = 'generic') {
