@@ -72,7 +72,7 @@ test("moveCharacter", () => {
   const gamePlay = {
     boardSize: 8,
     redrawPositions() {},
-    drawUi() {}
+    drawUi() {},
   };
   const stateService = new GameStateService(localStorage);
   const pCharacter = new PositionedCharacter(new Bowman(), 10);
@@ -81,7 +81,16 @@ test("moveCharacter", () => {
   gameCtrl.setTheme();
   gameCtrl.gameState.charactersPositions = [pCharacter];
   gameCtrl.moveCharacter(pCharacter, 20);
-  console.log(gameCtrl.gameState.charactersPositions)
+  // console.log(gameCtrl.gameState.charactersPositions)
   // expect(gameCtrl.hasCharacter(20).character).toEqual(pCharacter.character);
   expect(gameCtrl.hasCharacter(10)).toBe(false);
+});
+
+test.each([
+  [new Bowman(), true],
+  [new Daemon(), false],
+])("isPlayer(%s) return %i", (char, expecting) => {
+  const gameCtrl = new GameController({});
+  gameCtrl.gameState = new GameState();
+  expect(gameCtrl.isPlayer(char)).toBe(expecting);
 });
