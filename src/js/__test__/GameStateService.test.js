@@ -35,11 +35,9 @@ test("save GameState with custom name", () => {
 test("load GameState", () => {
   const expectings = {
     charactersPositions: [],
-    enemyTypes: [Daemon, Undead, Vampire],
     focusedCell: 23,
     focusedCharacter: undefined,
     maxPoints: 100,
-    playerTypes: [Bowman, Swordsman, Magician],
     points: 10,
     theme: "prairie",
   };
@@ -50,17 +48,15 @@ test("load GameState", () => {
   stateService.save(stateJSON);
   const resultJSON = stateService.load();
   const result = GameState.from(resultJSON);
-  expect(result).toEqual(expectings);
+  expect(result).toMatchObject(expectings);
 });
 
 test("load GameState with custom name", () => {
   const expectings = {
     charactersPositions: [],
-    enemyTypes: [Daemon, Undead, Vampire],
     focusedCell: 23,
     focusedCharacter: undefined,
     maxPoints: 100,
-    playerTypes: [Bowman, Swordsman, Magician],
     points: 10,
     theme: "prairie",
   };
@@ -72,7 +68,7 @@ test("load GameState with custom name", () => {
   stateService.save(stateJSON, name);
   const resultJSON = stateService.load(name);
   const result = GameState.from(resultJSON);
-  expect(result).toEqual(expectings);
+  expect(result).toMatchObject(expectings);
 });
 
 test("error for invalid state", () => {

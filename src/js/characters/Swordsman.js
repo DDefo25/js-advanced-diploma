@@ -1,8 +1,8 @@
 import CharMath from './CharMath';
 
 export default class Swordsman extends CharMath {
-  constructor(level, health) {
-    super(level, 40, 10);
+  constructor(level, health, id) {
+    super(level, id, 40, 10);
     this.type = 'swordsman';
     this.attackRange = 1;
     this.moveRange = 4;

@@ -5,7 +5,7 @@ test('creating new Daemon', () => {
     level: 1, attack: 10, defence: 10, health: 50, type: 'daemon', attackRange: 4, moveRange: 1, [Symbol.toStringTag]: 'Daemon',
   };
   const result = new Daemon(1);
-  expect(result).toEqual(expectings);
+  expect(result).toMatchObject(expectings);
 });
 
 test('creating new Daemon, level 3', () => {
@@ -13,7 +13,7 @@ test('creating new Daemon, level 3', () => {
     level: 3, attack: 23, defence: 23, health: 100, type: 'daemon', attackRange: 4, moveRange: 1, [Symbol.toStringTag]: 'Daemon',
   };
   const result = new Daemon(3);
-  expect(result).toEqual(expectings);
+  expect(result).toMatchObject(expectings);
 });
 
 test('recreating new Daemon, level 3, health 5', () => {
@@ -21,5 +21,5 @@ test('recreating new Daemon, level 3, health 5', () => {
     level: 3, attack: 23, defence: 23, health: 5, type: 'daemon', attackRange: 4, moveRange: 1, [Symbol.toStringTag]: 'Daemon',
   };
   const result = new Daemon(3, 5);
-  expect(result).toEqual(expectings);
+  expect(result).toMatchObject(expectings);
 });

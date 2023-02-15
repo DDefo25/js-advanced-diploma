@@ -21,7 +21,7 @@ export default class GameState {
     this.points = points;
     this.focusedCharacter = focusedCharacter;
     this.playerTypes = [Bowman, Swordsman, Magician];
-    this.enemyTypes = [Daemon, Undead, Vampire];
+    this.enemyTypes = [Daemon, Undead, Vampire, Bowman];
     this.theme = theme;
   }
 
@@ -42,6 +42,7 @@ export default class GameState {
         charactersPositionsToJSON.push({
           character: getClassName(el.character),
           position: el.position,
+          team: el.team,
         });
       });
     }
@@ -60,6 +61,7 @@ export default class GameState {
               positionXY: obj.focusedCharacter.positionXY,
               posibleMoves: obj.focusedCharacter.posibleMoves,
               posibleAttacks: obj.focusedCharacter.posibleAttacks,
+              team: obj.focusedCharacter.team,
             }
           : obj.focusedCharacter,
     };
@@ -70,24 +72,24 @@ export default class GameState {
     function createClass(obj) {
       switch (obj.className) {
         case 'Bowman': 
-        return new Bowman(obj.obj.level, obj.obj.health);
+        return new Bowman(obj.obj.level, obj.obj.health, obj.obj.id);
         case 'Swordsman': 
-        return new Swordsman(obj.obj.level, obj.obj.health);
+        return new Swordsman(obj.obj.level, obj.obj.health, obj.obj.id);
         case 'Magician': 
-        return new Magician(obj.obj.level, obj.obj.health);
+        return new Magician(obj.obj.level, obj.obj.health, obj.obj.id);
         case 'Daemon': 
-        return new Daemon(obj.obj.level, obj.obj.health);
+        return new Daemon(obj.obj.level, obj.obj.health, obj.obj.id);
         case 'Vampire': 
-        return new Vampire(obj.obj.level, obj.obj.health);
+        return new Vampire(obj.obj.level, obj.obj.health, obj.obj.id);
         case 'Undead': 
-        return new Undead(obj.obj.level, obj.obj.health);
+        return new Undead(obj.obj.level, obj.obj.health, obj.obj.id);
       }
     }
 
     const charactersPositionsFromJSON = [];
     object.charactersPositionsToJSON.forEach((el) => {
       charactersPositionsFromJSON.push(
-        new PositionedCharacter(createClass(el.character), el.position)
+        new PositionedCharacter(createClass(el.character), el.position, el.team)
       )
     }
     );
@@ -101,6 +103,7 @@ export default class GameState {
             positionXY: object.focusedCharacterToJSON.positionXY,
             posibleMoves: object.focusedCharacterToJSON.posibleMoves,
             posibleAttacks: object.focusedCharacterToJSON.posibleAttacks,
+            team: object.focusedCharacterToJSON.team,
           }
         : undefined;
     

@@ -1,8 +1,8 @@
 import Character from '../Character';
 
 export default class CharMath extends Character {
-  constructor(level, attack, defence) {
-    super(level);
+  constructor(level, id, attack, defence) {
+    super(level, id);
     this.attack = attack;
     this.defence = defence;
     if (level > 1) {

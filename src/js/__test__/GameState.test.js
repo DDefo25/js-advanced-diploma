@@ -9,14 +9,15 @@ test("GameState.toJSON throw error for GameState", () => {
 });
 
 test("getClassName of GameState.toJSON return {obj, className}", () => {
+  const char = new Bowman();
   const expectings = {
-    obj: new Bowman(),
+    obj: char,
     className: "Bowman",
   };
   const gamePlay = { boardSize: 8 };
   const gameCtrl = new GameController(gamePlay);
   gameCtrl.gameState = new GameState();
-  const pCharacter = new PositionedCharacter(new Bowman(), 29);
+  const pCharacter = new PositionedCharacter(char, 29);
   gameCtrl.focusCharacter(pCharacter);
   const result = GameState.toJSON(gameCtrl.gameState);
   expect(result.focusedCharacterToJSON.characterToJSON).toEqual(expectings);

@@ -1,3 +1,4 @@
+const randomId = require('random-id');
 /**
  * Базовый класс, от которого наследуются классы персонажей
  * @property level - уровень персонажа, от 1 до 4
@@ -13,7 +14,7 @@
  * vampire
  */
 export default class Character {
-  constructor(level, type = 'generic') {
+  constructor(level, id, type = 'generic') {
     this.level = 1;
     this.attack = 0;
     this.defence = 0;
@@ -21,6 +22,7 @@ export default class Character {
     this.type = type;
     this.attackRange = 0;
     this.moveRange = 0;
+    this.id = id ? id : randomId(5);
     // TODO: выбросите исключение, если кто-то использует "new Character()"
     if (new.target.name === 'Character') {
       throw new Error('new Character() is forbidden');

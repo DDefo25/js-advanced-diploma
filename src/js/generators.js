@@ -26,10 +26,10 @@ export function* characterGenerator(allowedTypes, maxLevel) {
  * @returns экземпляр Team, хранящий экземпляры персонажей.
  * Количество персонажей в команде - characterCount
  * */
-export function generateTeam(allowedTypes, maxLevel, characterCount) {
+export function generateTeam(allowedTypes, maxLevel, characterCount, teamName) {
   let count = 0;
   const playerGenerator = characterGenerator(allowedTypes, maxLevel);
-  const team = new Team();
+  const team = new Team(teamName);
   while (count < characterCount) {
     count += 1;
     team.add(playerGenerator.next().value);

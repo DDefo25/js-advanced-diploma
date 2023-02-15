@@ -43,10 +43,10 @@ export default class GameController {
     this.resetListeners();
     this.setTheme();
 
-    const playerTeam = generateTeam(this.gameState.playerTypes, 3, 4);
+    const playerTeam = generateTeam(this.gameState.playerTypes, 3, 4, 'user');
     this.positionTeam(playerTeam, [1, 2]);
 
-    const enemyTeam = generateTeam(this.gameState.enemyTypes, 3, 4);
+    const enemyTeam = generateTeam(this.gameState.enemyTypes, 3, 4, 'bot');
     this.positionTeam(enemyTeam, [7, 8]);
 
     this.gamePlay.redrawPositions(this.gameState.charactersPositions);
@@ -71,25 +71,25 @@ export default class GameController {
 
   onCellClick(index) {
     // TODO: react to click
-    const character = this.hasCharacter(index);
-    if (character && this.isPlayer(character.character)) {
+    const pCharacter = this.hasCharacter(index);
+    if (pCharacter && this.isPlayer(pCharacter)) {
       this.unfocusCell();
       this.focusCell(index);
-      this.focusCharacter(character);
-    } else if (character && !this.isPlayer(character.character)) {
+      this.focusCharacter(pCharacter);
+    } else if (pCharacter && !this.isPlayer(pCharacter)) {
       if (
         this.gameState.focusedCharacter &&
         this.gameState.focusedCharacter.posibleAttacks.includes(index)
       ) {
-        this.attack(character).then(() => {
+        this.attack(pCharacter).then(() => {
           this.aiMove();
         });
       } else {
         GamePlay.showError("Выберите персонажа Игрока");
       }
-    } else if (!character && this.gameState.focusedCharacter) {
+    } else if (!pCharacter && this.gameState.focusedCharacter) {
       if (
-        !this.isPlayer(character.character) &&
+        !this.isPlayer(pCharacter) &&
         this.gameState.focusedCharacter.posibleMoves.includes(index)
       ) {
         this.moveCharacter(this.gameState.focusedCharacter, index);
@@ -100,20 +100,20 @@ export default class GameController {
 
   onCellEnter(index) {
     // TODO: react to mouse enter
-    const characterInCell = this.hasCharacter(index);
-    if (characterInCell) {
-      const { level, attack, defence, health } = characterInCell.character;
+    const pCharacterInCell = this.hasCharacter(index);
+    if (pCharacterInCell) {
+      const { level, attack, defence, health } = pCharacterInCell.character;
       this.gamePlay.showCellTooltip(
         `\u{1F396}${level} \u{2694}${attack} \u{1F6E1}${defence} \u{2764}${health}`,
         index
       );
 
-      if (this.isPlayer(characterInCell.character)) {
+      if (this.isPlayer(pCharacterInCell)) {
         this.gamePlay.setCursor(cursors.pointer);
       }
     }
 
-    if (this.gameState.focusedCharacter && !characterInCell) {
+    if (this.gameState.focusedCharacter && !pCharacterInCell) {
       if (this.gameState.focusedCharacter.posibleMoves.includes(index)) {
         this.gamePlay.setCursor(cursors.pointer);
         this.gamePlay.selectCell(index, "green");
@@ -122,7 +122,7 @@ export default class GameController {
       }
     } else if (
       this.gameState.focusedCharacter &&
-      !this.isPlayer(characterInCell.character)
+      !this.isPlayer(pCharacterInCell)
     ) {
       if (this.gameState.focusedCharacter.posibleAttacks.includes(index)) {
         this.gamePlay.setCursor(cursors.crosshair);
@@ -130,7 +130,7 @@ export default class GameController {
       } else {
         this.gamePlay.setCursor(cursors.notallowed);
       }
-    } else if (!this.isPlayer(characterInCell.character)) {
+    } else if (!this.isPlayer(pCharacterInCell)) {
       this.gamePlay.setCursor(cursors.notallowed);
     }
   }
@@ -161,15 +161,13 @@ export default class GameController {
 
     team.characters.forEach((character) => {
       this.gameState.charactersPositions.push(
-        new PositionedCharacter(character, this.getRandomPosition(allowedCells))
+        new PositionedCharacter(character, this.getRandomPosition(allowedCells), team.name)
       );
     });
   }
 
   remove(character) {
-    const index = this.gameState.charactersPositions.findIndex(
-      (el) => el.character === character
-    );
+    const index = this.gameState.charactersPositions.findIndex((el) => el.character.id === character.id);
     this.gameState.charactersPositions.splice(index, 1);
   }
 
@@ -182,40 +180,24 @@ export default class GameController {
   }
 
   hasCharacter(index) {
-    const character = this.gameState.charactersPositions.find(
+    const pCharacter = this.gameState.charactersPositions.find(
       (char) => char.position === index
     );
-    return character || false;
+    return pCharacter || false;
   }
 
   getEnemyCharacter() {
-    const enemyTeam = this.gameState.charactersPositions.filter((el) =>
-      this.gameState.enemyTypes.some((type) => el.character instanceof type)
-    );
-    const aiCharacter = this.randomTarget(enemyTeam);
+    const enemyTeam = this.gameState.charactersPositions.filter(el => el.team === 'bot');
+    const aiCharacter = this.randomItem(enemyTeam);
     return aiCharacter;
   }
 
-  isPlayer(character) {
-    return this.gameState.playerTypes.some((type) => character instanceof type);
+  isPlayer(pCharacter) {
+    return pCharacter.team === 'user';
   }
 
-  isSameTeam(character1, character2) {
-    const character1IsPlayer = this.gameState.playerTypes.some(
-      (type) => character1 instanceof type
-    )
-      ? "player"
-      : "enemy";
-    const character2IsPlayer = this.gameState.playerTypes.some(
-      (type) => character2 instanceof type
-    )
-      ? "player"
-      : "enemy";
-
-    if (character1IsPlayer === character2IsPlayer) {
-      return true;
-    }
-    return false;
+  isSameTeam(pCharacter1, pCharacter2) {
+    return pCharacter1.team === pCharacter2.team;
   }
 
   moveEnd() {
@@ -224,10 +206,10 @@ export default class GameController {
       .forEach((el) => this.remove(el.character));
 
     const playerTeam = this.gameState.charactersPositions.filter((el) =>
-      this.isPlayer(el.character)
+      el.team === 'user'
     );
     const enemyTeam = this.gameState.charactersPositions.filter((el) =>
-      this.gameState.enemyTypes.some((type) => el.character instanceof type)
+      el.team === 'bot'
     );
     this.saveToStorage(this.gameState);
     this.unfocusCharacter();
@@ -243,7 +225,7 @@ export default class GameController {
       const unposPlayerTeam = playerTeam.map(
         (character) => character.character
       );
-      this.nextLevel(new Team(unposPlayerTeam));
+      this.nextLevel(new Team('user', unposPlayerTeam));
     }
   }
 
@@ -281,13 +263,13 @@ export default class GameController {
     this.focusCharacter(aiCharacter);
 
     if (this.gameState.focusedCharacter.posibleAttacks.length > 0) {
-      const target = this.randomTarget(
+      const target = this.randomItem(
         this.gameState.focusedCharacter.posibleAttacks
       );
       this.attack(this.hasCharacter(target));
       this.saveToStorage(this.gameState);
     } else {
-      const target = this.randomTarget(
+      const target = this.randomItem(
         this.gameState.focusedCharacter.posibleMoves
       );
       this.moveCharacter(this.gameState.focusedCharacter, target);
@@ -313,7 +295,7 @@ export default class GameController {
   }
 
   focusCharacter(pCharacter) {
-    const { character, position } = pCharacter;
+    const { character, position, team } = pCharacter;
     const y = Math.floor(position / this.gamePlay.boardSize);
     const x = position % this.gamePlay.boardSize;
 
@@ -338,7 +320,7 @@ export default class GameController {
       ) {
         const cell = i * this.gamePlay.boardSize + n;
         if (this.hasCharacter(cell) && cell !== position) {
-          if (!this.isSameTeam(character, this.hasCharacter(cell).character)) {
+          if (!this.isSameTeam(pCharacter, this.hasCharacter(cell))) {
             posibleAttacks.push(cell);
           }
         }
@@ -373,6 +355,7 @@ export default class GameController {
     this.gameState.focusedCharacter = {
       character,
       position,
+      team,
       positionXY: { x, y },
       posibleMoves,
       posibleAttacks,
@@ -424,7 +407,7 @@ export default class GameController {
     }
   }
 
-  randomTarget(arr) {
+  randomItem(arr) {
     if (arr.length === 0) {
       return false;
     }

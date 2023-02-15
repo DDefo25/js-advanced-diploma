@@ -5,7 +5,7 @@ test('creating new Vampire', () => {
     level: 1, attack: 25, defence: 25, health: 50, type: 'vampire', attackRange: 2, moveRange: 2, [Symbol.toStringTag]: 'Vampire',
   };
   const result = new Vampire(1);
-  expect(result).toEqual(expectings);
+  expect(result).toMatchObject(expectings);
 });
 
 test('recreating new Vampire, level 3, health 5', () => {
@@ -13,5 +13,5 @@ test('recreating new Vampire, level 3, health 5', () => {
     level: 3, attack: 59, defence: 59, health: 5, type: 'vampire', attackRange: 2, moveRange: 2, [Symbol.toStringTag]: 'Vampire',
   };
   const result = new Vampire(3, 5);
-  expect(result).toEqual(expectings);
+  expect(result).toMatchObject(expectings);
 });

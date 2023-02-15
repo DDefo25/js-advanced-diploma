@@ -1,4 +1,4 @@
-const randomId = require('random-id');
+// const randomId = require('random-id');
 
 /**
  * Класс, представляющий персонажей команды
@@ -16,11 +16,12 @@ const randomId = require('random-id');
  * */
 export default class Team {
   // TODO: write your logic here
-  constructor(characters) {
+  constructor(name = 'user', characters) {
+    this.name = name;
     this._characters = new Map();
     if (characters) {
       characters.forEach((character) => {
-        this._characters.set(randomId(5), character);
+        this._characters.set(character.id, character);
       });
     }
   }
@@ -32,13 +33,17 @@ export default class Team {
   set characters(arr) {
     this._characters.clear();
     [...arr].forEach((character) => {
-      this._characters.set(randomId(5), character);
+      this._characters.set(character.id, character);
     });
   }
 
   add(...characters) {
     characters.forEach((character) => {
-      this._characters.set(randomId(5), character);
+      this._characters.set(character.id, character);
     });
+  }
+
+  has(character) {
+    return this.characters.some(char => char.id === character.id)
   }
 }
